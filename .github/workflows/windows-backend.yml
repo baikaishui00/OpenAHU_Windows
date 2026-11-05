@@ -1,0 +1,24 @@
+name: OpenAHU Windows Backend
+on:
+  push:
+  pull_request:
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Frozen DTO check
+        run: python src/OpenAHU.Contracts/tools/check_contract_signatures.py
+      - name: Frozen API routes check
+        run: python src/OpenAHU.Api/tools/check_route_coverage.py
+      - name: SQLite schema / seed
+        run: python tests/check_migration_sql.py
+      - name: Build + live HTTP smoke test
+        shell: pwsh
+        run: ./tests/smoke.ps1
