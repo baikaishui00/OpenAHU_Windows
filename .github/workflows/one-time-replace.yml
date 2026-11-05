@@ -1,0 +1,57 @@
+name: One-time replace with OpenAHU v3.1
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/one-time-replace.yml'
+      - '.github/import-payload.b64'
+permissions:
+  contents: write
+jobs:
+  replace:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Replace tracked files with archive contents
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import base64, bz2, io, pathlib, shutil, subprocess, tarfile, tempfile
+          root=pathlib.Path.cwd()
+          encoded=(root/'.github/import-payload.b64').read_text(encoding='ascii').strip()
+          data=bz2.decompress(base64.b64decode(encoded, validate=True))
+          with tempfile.TemporaryDirectory() as directory:
+              temp=pathlib.Path(directory)
+              with tarfile.open(fileobj=io.BytesIO(data), mode='r:') as archive:
+                  members=archive.getmembers()
+                  if len(members)!=59:
+                      raise RuntimeError(f'Expected 59 archive files, got {len(members)}')
+                  for member in members:
+                      path=pathlib.PurePosixPath(member.name)
+                      if not member.isfile() or path.is_absolute() or '..' in path.parts or path.parts[0]=='.git':
+                          raise RuntimeError(f'Unsafe archive member: {member.name}')
+                      dest=temp.joinpath(*path.parts)
+                      dest.parent.mkdir(parents=True,exist_ok=True)
+                      with archive.extractfile(member) as inp, dest.open('wb') as out:
+                          shutil.copyfileobj(inp,out)
+              tracked=subprocess.check_output(['git','ls-files','-z']).split(b'\0')
+              for raw in tracked:
+                  if raw:
+                      target=root / raw.decode('utf-8')
+                      if target.is_file() or target.is_symlink(): target.unlink()
+              for source in temp.rglob('*'):
+                  if source.is_file():
+                      dest=root/source.relative_to(temp)
+                      dest.parent.mkdir(parents=True,exist_ok=True)
+                      shutil.copy2(source,dest)
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -m "Replace old repository files with OpenAHU v3.1 backend"
+          git push origin HEAD:main
