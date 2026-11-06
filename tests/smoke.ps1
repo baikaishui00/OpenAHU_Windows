@@ -45,6 +45,7 @@ try {
     $h = @{ 'X-OpenAHU-Session' = $s.token }
     $base = $s.baseUrl + '/api/v1'
     $health = Invoke-RestMethod "$base/health" -Headers $h
+    Write-Host ("Health response: " + ($health | ConvertTo-Json -Compress))
     Assert ($health.databaseReady -and $health.status -eq 'ok') 'health not ready'
     ExpectStatus "$base/terms" @{} 401
     ExpectStatus "$base/courses" $h 400
@@ -73,6 +74,17 @@ try {
     $coursesAfterDelete = @(Invoke-RestMethod "$base/courses?termId=term-2026-fall" -Headers $h)
     Assert (($coursesAfterDelete | Where-Object id -eq $id).Count -eq 0) 'course delete failed'
     Write-Host 'PASS: health / session 401 / term 400&404 / read / CRUD / restart persistence'
+}
+catch {
+    Write-Host ("Smoke test failure: " + $_.Exception.Message)
+    foreach($logName in @('stdout.log','stderr.log')) {
+        $logPath = Join-Path $tmp $logName
+        if(Test-Path $logPath) {
+            Write-Host "--- $logName (last 120 lines) ---"
+            Get-Content $logPath -Tail 120 | ForEach-Object { Write-Host $_ }
+        }
+    }
+    throw
 }
 finally {
     Stop-Api
