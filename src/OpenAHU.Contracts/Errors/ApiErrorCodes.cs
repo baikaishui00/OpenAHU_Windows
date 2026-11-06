@@ -6,6 +6,9 @@ namespace OpenAHU.Contracts.Errors;
 /// </summary>
 public static class ApiErrorCodes
 {
+    /// <summary>401：无效或缺失的本地进程会话令牌。</summary>
+    public const string Unauthorized = "unauthorized";
+
     /// <summary>400：请求参数不合法（缺参、越界、格式错误）。</summary>
     public const string InvalidRequest = "invalid_request";
 

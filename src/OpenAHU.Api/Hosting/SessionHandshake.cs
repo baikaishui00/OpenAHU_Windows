@@ -57,9 +57,16 @@ public sealed record SessionHandshake(
         }
 
         var json = JsonSerializer.Serialize(handshake, ContractJson.CreateOptions());
-        var temporary = path + ".tmp";
-        File.WriteAllText(temporary, json, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
-        File.Move(temporary, path, overwrite: true);
+        var temporary = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
+        try
+        {
+            File.WriteAllText(temporary, json, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+            File.Move(temporary, path, overwrite: true);
+        }
+        finally
+        {
+            if (File.Exists(temporary)) File.Delete(temporary);
+        }
     }
 
     /// <summary>删除交接文件；进程异常退出时残留文件由下次启动覆盖。</summary>

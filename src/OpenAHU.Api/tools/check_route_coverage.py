@@ -22,7 +22,7 @@ from pathlib import Path
 
 DOC_ROW = re.compile(r"\|\s*(GET|POST|PUT|DELETE|PATCH)\s*\|\s*`(/api/v1[^`]*)`")
 GROUP_PREFIX = "/api/v1"
-MAP_GET = re.compile(r'MapGet\(\s*"([^"]+)"')
+MAP_ENDPOINT = re.compile(r'Map(Get|Post|Put|Delete)\(\s*"([^"]+)"')
 # 任何形如 MapXxx(group, "METHOD", "/path") 的注册辅助方法（MapPending、MapPendingTermScoped ...）
 # 都必须被识别，否则新增辅助方法会让检查误报“缺失”。
 MAP_HELPER = re.compile(r'Map\w+\(\s*\w+\s*,\s*"([A-Z]+)"\s*,\s*"([^"]+)"')
@@ -43,8 +43,8 @@ def source_routes(api_dir: Path) -> set[tuple[str, str]]:
     routes: set[tuple[str, str]] = set()
     for path in sorted(api_dir.rglob("*.cs")):
         text = path.read_text(encoding="utf-8-sig")
-        for match in MAP_GET.finditer(text):
-            routes.add(("GET", GROUP_PREFIX + match.group(1)))
+        for match in MAP_ENDPOINT.finditer(text):
+            routes.add((match.group(1).upper(), GROUP_PREFIX + match.group(2)))
         for match in MAP_HELPER.finditer(text):
             routes.add((match.group(1), GROUP_PREFIX + match.group(2)))
     return routes

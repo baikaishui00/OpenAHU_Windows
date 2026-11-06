@@ -27,7 +27,7 @@ RECORD_PATTERN = re.compile(r"public\s+(sealed\s+)?record\s+(\w+)\s*\(([^;{]*?)\
 
 # 已提出、等待跨组评审的公共模型：允许存在，但必须显式登记在这里，
 # 评审通过后应写入冻结文档并从本集合删除（否则下一次检查会报“多出未冻结类型”）。
-PENDING_REVIEW: frozenset[str] = frozenset({"HealthDto", "CourseUpsertRequest"})
+PENDING_REVIEW: frozenset[str] = frozenset()
 
 
 def normalize_param(raw: str) -> str:

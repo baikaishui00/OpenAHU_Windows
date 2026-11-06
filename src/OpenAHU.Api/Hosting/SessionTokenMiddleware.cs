@@ -68,7 +68,7 @@ public sealed class SessionTokenMiddleware
         return ApiResults.WriteAsync(
             context,
             StatusCodes.Status401Unauthorized,
-            ApiResults.UnauthorizedCode,
+            OpenAHU.Contracts.Errors.ApiErrorCodes.Unauthorized,
             "本地服务会话无效，请从桌面客户端启动本程序。",
             context.RequestAborted);
     }

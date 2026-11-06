@@ -20,3 +20,8 @@ PR_DRAFT_*.md
 
 # 说明：03_数据库交付/OpenAHU_demo.sqlite3 是任务包自带的演示资料，
 # 是否纳入仓库待组长决定，因此这里不忽略 *.sqlite3。
+
+# v3.1 会话锁、原子临时文件和用户数据
+session.json.lock
+session.json.*.tmp
+*.db-journal

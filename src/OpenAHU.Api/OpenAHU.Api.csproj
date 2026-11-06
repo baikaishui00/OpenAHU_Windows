@@ -11,17 +11,13 @@
     <InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>
 
-  <!--
-    契约边界：
-    1. 本服务只依赖 OpenAHU.Contracts；**不引用** EF Core / Microsoft.Data.Sqlite，
-       数据库访问必须经由 04 Application 定义的接口，由 05 Infrastructure 实现。
-    2. 未引入 Microsoft.AspNetCore.OpenApi：本机无 NuGet 还原能力，无法确定版本与仓库 SDK 对齐，
-       留待合约 freeze PR 合并后单独加（见 README「未完成」）。
-    3. 未开启 TreatWarningsAsErrors：本机无 .NET SDK，未做编译验证。
-  -->
+  <!-- 依赖：API -> Application / Contracts；Infrastructure仅在Program组装服务。
+       API路由不允许直接写EF或SQL。Windows上的编译及HTTP烟测尚待验证。 -->
 
   <ItemGroup>
     <ProjectReference Include="..\OpenAHU.Contracts\OpenAHU.Contracts.csproj" />
+    <ProjectReference Include="..\OpenAHU.Application\OpenAHU.Application.csproj" />
+    <ProjectReference Include="..\OpenAHU.Infrastructure\OpenAHU.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

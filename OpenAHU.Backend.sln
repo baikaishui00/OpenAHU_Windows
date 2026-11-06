@@ -1,0 +1,36 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenAHU.Contracts", "src\OpenAHU.Contracts\OpenAHU.Contracts.csproj", "{EA5B38DF-BE6D-5FF1-A732-4BC50D0AEAB7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenAHU.Application", "src\OpenAHU.Application\OpenAHU.Application.csproj", "{67072E7E-8C91-5539-9961-F70019260B88}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenAHU.Infrastructure", "src\OpenAHU.Infrastructure\OpenAHU.Infrastructure.csproj", "{0161C9F0-7FA5-5A0D-83AB-E976D9C9827B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenAHU.Api", "src\OpenAHU.Api\OpenAHU.Api.csproj", "{14890A9C-F9DF-540C-B2D4-20EB9CB18EFB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EA5B38DF-BE6D-5FF1-A732-4BC50D0AEAB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA5B38DF-BE6D-5FF1-A732-4BC50D0AEAB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA5B38DF-BE6D-5FF1-A732-4BC50D0AEAB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA5B38DF-BE6D-5FF1-A732-4BC50D0AEAB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67072E7E-8C91-5539-9961-F70019260B88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67072E7E-8C91-5539-9961-F70019260B88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67072E7E-8C91-5539-9961-F70019260B88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67072E7E-8C91-5539-9961-F70019260B88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0161C9F0-7FA5-5A0D-83AB-E976D9C9827B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0161C9F0-7FA5-5A0D-83AB-E976D9C9827B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0161C9F0-7FA5-5A0D-83AB-E976D9C9827B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0161C9F0-7FA5-5A0D-83AB-E976D9C9827B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14890A9C-F9DF-540C-B2D4-20EB9CB18EFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14890A9C-F9DF-540C-B2D4-20EB9CB18EFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14890A9C-F9DF-540C-B2D4-20EB9CB18EFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14890A9C-F9DF-540C-B2D4-20EB9CB18EFB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
