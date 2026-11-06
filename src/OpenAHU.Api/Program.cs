@@ -18,6 +18,8 @@ builder.Services.ConfigureHttpJsonOptions(o => {
 });
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+var databaseStartupState = new DatabaseStartupState();
+builder.Services.AddSingleton(databaseStartupState);
 var sessionToken=SessionToken.Create();
 builder.Services.AddSingleton(sessionToken);
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
@@ -28,6 +30,21 @@ using var lease=SingleInstanceLease.Acquire(handshakePath);
 var app=builder.Build();
 app.UseExceptionHandler();
 app.UseMiddleware<SessionTokenMiddleware>();
+app.Use(async (context, next) =>
+{
+    var requestPath = context.Request.Path.Value ?? "";
+    if (!databaseStartupState.IsReady &&
+        requestPath.StartsWith("/api/v1/", StringComparison.OrdinalIgnoreCase) &&
+        !requestPath.Equals("/api/v1/health", StringComparison.OrdinalIgnoreCase) &&
+        !requestPath.Equals("/api/v1/data-status", StringComparison.OrdinalIgnoreCase))
+    {
+        await ApiResults.WriteAsync(context, StatusCodes.Status503ServiceUnavailable,
+            ApiErrorCodes.DbUnavailable, "数据库初始化未通过，业务接口暂不可用。",
+            context.RequestAborted);
+        return;
+    }
+    await next(context);
+});
 app.UseStatusCodePages(async ctx => {
     var h=ctx.HttpContext;
     if(h.Request.Path.StartsWithSegments("/api",StringComparison.OrdinalIgnoreCase))
@@ -45,7 +62,10 @@ try
 {
     using var scope=app.Services.CreateScope();
     var db=scope.ServiceProvider.GetRequiredService<CampusDbContext>();
+    await DatabaseCompatibilityGuard.AssertCompatibleAsync(
+        db, InfrastructureOptions.DatabasePath(app.Configuration), CancellationToken.None);
     await DemoDatabaseInitializer.InitializeAsync(db,CancellationToken.None);
+    databaseStartupState.IsReady = true;
     app.Logger.LogInformation("本地SQLite已完成首次迁移与演示资料检查。");
 }
 catch(Exception e)
