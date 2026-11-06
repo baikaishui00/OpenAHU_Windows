@@ -138,4 +138,8 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    # GitHub Actions Windows consoles may default to cp1252; force Unicode-safe output.
+    for stream in (sys.stdout, sys.stderr):
+        if stream is not None and hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8")
     sys.exit(main())
