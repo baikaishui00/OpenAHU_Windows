@@ -50,11 +50,12 @@ try {
     ExpectStatus "$base/terms" @{} 401
     ExpectStatus "$base/courses" $h 400
     ExpectStatus "$base/courses?termId=unknown" $h 404
-    $terms = @(Invoke-RestMethod "$base/terms" -Headers $h)
+    $terms = Invoke-RestMethod "$base/terms" -Headers $h
+    Write-Host ("Demo terms count: " + $terms.Count)
     Assert ($terms.Count -ge 2) 'demo terms not seeded'
-    $coursesBefore = @(Invoke-RestMethod "$base/courses?termId=term-2026-fall" -Headers $h)
+    $coursesBefore = Invoke-RestMethod "$base/courses?termId=term-2026-fall" -Headers $h
     Assert ($coursesBefore.Count -ge 3) 'demo courses not returned'
-    $grades = @(Invoke-RestMethod "$base/grades?termId=term-2026-fall" -Headers $h)
+    $grades = Invoke-RestMethod "$base/grades?termId=term-2026-fall" -Headers $h
     Assert ($grades.Count -ge 3) 'demo grades not returned'
     $payload = @{ name='自动化测试课程';teacher='测试教师';location='测试楼';dayOfWeek=5;
         startSection=7;endSection=8;weekNumbers=@(1,3,5);termId='term-2026-fall' } | ConvertTo-Json -Depth 5 -Compress
@@ -64,14 +65,14 @@ try {
     Stop-Api
     $s = Start-Api
     $h = @{ 'X-OpenAHU-Session' = $s.token }; $base = $s.baseUrl + '/api/v1'
-    $coursesAfter = @(Invoke-RestMethod "$base/courses?termId=term-2026-fall" -Headers $h)
+    $coursesAfter = Invoke-RestMethod "$base/courses?termId=term-2026-fall" -Headers $h
     Assert (($coursesAfter | Where-Object id -eq $id).Count -eq 1) 'course was not persisted after restart'
     $updatedBody = @{ name='已修改课程';teacher='测试教师';location='测试楼';dayOfWeek=5;
         startSection=7;endSection=8;weekNumbers=@(1,3,5);termId='term-2026-fall' } | ConvertTo-Json -Depth 5 -Compress
     $updated = Invoke-RestMethod "$base/local/courses/$id" -Method PUT -Headers $h -ContentType 'application/json; charset=utf-8' -Body ([System.Text.Encoding]::UTF8.GetBytes($updatedBody))
     Assert ($updated.name -eq '已修改课程') 'course update failed'
     Invoke-RestMethod "$base/local/courses/$id" -Method DELETE -Headers $h | Out-Null
-    $coursesAfterDelete = @(Invoke-RestMethod "$base/courses?termId=term-2026-fall" -Headers $h)
+    $coursesAfterDelete = Invoke-RestMethod "$base/courses?termId=term-2026-fall" -Headers $h
     Assert (($coursesAfterDelete | Where-Object id -eq $id).Count -eq 0) 'course delete failed'
     Write-Host 'PASS: health / session 401 / term 400&404 / read / CRUD / restart persistence'
 }
